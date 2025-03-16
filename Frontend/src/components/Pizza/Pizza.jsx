@@ -64,7 +64,7 @@ const Pizza = () => {
         <div className='col-md-6'>
           <h1>{pizza.name}</h1>
           <h3 className='mt-3'>Precio: ${pizza.price.toLocaleString('es-ES')}</h3>
-
+          <p>{pizza.desc}</p>
           <div className='mt-4'>
             <h4>🍕 Ingredientes 🍕</h4>
             <ul className='list-group'>
