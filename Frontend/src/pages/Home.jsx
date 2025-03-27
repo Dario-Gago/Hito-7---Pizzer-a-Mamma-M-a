@@ -1,8 +1,7 @@
-import './HomeS.css'
-import CardPizza from '../CardPizza/CardPizza'
-import Header from '../Header/Header'
+import CardPizza from '../components/CardPizza/CardPizza'
+import Header from '../components/Header/Header'
 import { useContext } from 'react'
-import { TotalContext } from '../../context/TotalProvider'
+import { TotalContext } from '../context/TotalProvider'
 const Home = () => {
   const { info } = useContext(TotalContext)
   return (
