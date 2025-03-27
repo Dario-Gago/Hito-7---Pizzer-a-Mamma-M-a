@@ -1,10 +1,11 @@
 import { useContext } from 'react'
 import { TotalContext } from '../../context/TotalProvider'
 import { UserContext } from '../../context/UserProvider'
+import Swal from 'sweetalert2'
 
 const Cart = () => {
   const { cartProduct, setCartProduct, total, setTotal } = useContext(TotalContext)
-  const { token } = useContext(UserContext) // Import the token from UserContext
+  const { token } = useContext(UserContext)
 
   const updateQuantity = (id, change) => {
     const updatedCart = cartProduct.reduce((acc, pizza) => {
@@ -28,9 +29,47 @@ const Cart = () => {
     const newTotal = updatedCart.reduce((acc, pizza) => {
       const price = parseFloat(pizza.price) || 0
       const count = parseInt(pizza.count) || 1
-      return acc + (price * count)
+      return acc + price * count
     }, 0)
     setTotal(newTotal)
+  }
+
+  const handleCheckout = async () => {
+    if (!token) return
+
+    try {
+      const response = await fetch('http://localhost:5000/api/checkouts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ cart: cartProduct, total })
+      })
+
+      const data = await response.json()
+      if (data.error) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: data.error
+        })
+      } else {
+        Swal.fire({
+          icon: 'success',
+          title: 'Compra realizada con éxito',
+          text: '¡Gracias por tu compra!'
+        })
+        setCartProduct([])
+        setTotal(0)
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Hubo un problema al procesar tu pago.'
+      })
+    }
   }
 
   return (
@@ -87,7 +126,8 @@ const Cart = () => {
               </h4>
               <button
                 className='btn btn-success'
-                disabled={!token} // Disable button when token is false
+                onClick={handleCheckout}
+                disabled={!token}
               >
                 Pagar
               </button>
